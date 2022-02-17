@@ -15,10 +15,7 @@ from selenium.webdriver.chrome.service import Service
 class JiKe:
     def __init__(self, url):
 
-        # chrome_opt = webdriver.ChromeOptions()
-        # chrome_opt.add_argument("--proxy-server=http://171.92.21.43:9000")
-        # self.browser = webdriver.Chrome(chrome_options=chrome_opt)
-        self.options = selenium.webdriver.chrome.options.Options()
+        # self.options = selenium.webdriver.FirefoxOptions
         # self.options.add_argument("headless")
         self.browser = None
         self.url = url
@@ -31,7 +28,7 @@ class JiKe:
         scroll:控制页面滚动
         """
         s = Service(executable_path=r'C:\Program Files\Google\Chrome\Application\chromedriver.exe')
-        self.browser = webdriver.Chrome(options=self.options, executable_path='C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+        self.browser = webdriver.Firefox(executable_path=r'C:\Program Files\Firefox Developer Edition\geckodriver.exe')
         self.browser.get(self.url)
         if save_login_cookies:
             self.save_login_cookies()
@@ -41,24 +38,39 @@ class JiKe:
         if scroll:
             # 滑动至底部
             client_hg = scroll_top = 0
-            p_scroll_top = -1
+            p_scroll_hg = -1
             scroll_hg = 1
-            while round(scroll_top) + round(client_hg) < round(int(scroll_hg)):
-                if p_scroll_top == scroll_top:
-                    self.save_login_cookies()
-                    self.load_login_cookies()
+            cnt = 0
+            while round(scroll_top) + round(client_hg) < round(int(scroll_hg)+10):
+                # if p_scroll_hg == scroll_hg:
+                #     cnt += 1
+                #     if cnt == 3:
+                #         break
+                #     else :
+                #         sleep(6)
                 self.browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
                 # 根据网络状态适当修改滑动加载时间
-                time.sleep(12)
+                time.sleep(6)
                 js = 'let scroll_top = document.documentElement.scrollTop; return scroll_top;'
-                p_scroll_top = scroll_top
+                # p_scroll_top = scroll_top
+                # print("loading more...\n")
                 scroll_top = self.browser.execute_script(js)
                 js = 'let client_hg = document.documentElement.clientHeight; return client_hg;'
                 client_hg = self.browser.execute_script(js)
                 js = 'let scroll_hg = document.body.scrollHeight; return scroll_hg;'
+                p_scroll_hg = scroll_hg
                 scroll_hg = self.browser.execute_script(js)
+
+                print(scroll_top)
+                print(client_hg)
+                print(scroll_hg)
+                if p_scroll_hg == scroll_hg:
+                    break
         page = self.browser.page_source
+        print("finished")
         return page
+        # with open("page.txt","w",encoding="utf-8") as f:
+        # f.write(page)
 
     def save_login_cookies(self):
         """
@@ -66,12 +78,11 @@ class JiKe:
         """
         ref = refresh.Refresh()
         ref.save_cookies()
-        # ref.load_cookies()
-        #
-        # cookies = self.browser.get_cookies()
-        # with open('./cookies.json', 'w') as f:
-        #     #f.write(json.dumps(cookies))
-        #     json.dump(cookies,f)
+
+        cookies = self.browser.get_cookies()
+        with open('./cookies.json', 'w') as f:
+            # f.write(json.dumps(cookies))
+            json.dump(cookies, f)
         return True
 
     def load_login_cookies(self):
@@ -103,6 +114,7 @@ class JiKe:
         return True
 
     def geturl(self, page):
+        print("start download")
         page_etree = etree.HTML(page)
         content_list = page_etree.xpath('//div[@class="flex flex-col flex-auto pt-2 w-full animate-show min-w-0"]')
         cnt = 0
@@ -119,6 +131,8 @@ class JiKe:
             if area:
                 area = area[0]
                 # print(area)
+            else:
+                area = "null"
             img_pattern = './/div[@class="sc-bdnxRM fzUdiI"]'
             if content.xpath(img_pattern):
                 img_src = content.xpath(img_pattern + '//img/@src')
@@ -127,9 +141,9 @@ class JiKe:
                     url = img_src[0].split('?')[0]
                     # img_src = url + "?imageMogr2/auto-orient%7Cwatermark/3/image/aHR0cHM6Ly93YXRlcm1hcmsuamVsbG93LmNsdWIvP3RleHQ9JUU1JThEJUIzJUU1JTg4JUJCJTIwJTQwJUU2JTk2JTkwJUU3JTg0JUI2XyZoZWlnaHQ9NzU=/gravity/SouthEast/dx/10/dy/10"
                     print(url)
-                    self.download(user, url=url)
+                    self.download(user, area, url=url)
                     # with open("url.txt", "a", encoding="utf-8") as f:
-                    #     f.write(img_src[0] + "\n")
+                    # f.write(user+"|"+area+"|"+url + "\n")
 
                 else:
                     """
@@ -152,12 +166,16 @@ class JiKe:
                         # img_src = url+"?imageMogr2/auto-orient%7Cwatermark/3/image/aHR0cHM6Ly93YXRlcm1hcmsuamVsbG93LmNsdWIvP3RleHQ9JUU1JThEJUIzJUU1JTg4JUJCJTIwJTQwJUU2JTk2JTkwJUU3JTg0JUI2XyZoZWlnaHQ9NzU=/gravity/SouthEast/dx/10/dy/10"
                         # # print(img_src)
                         # with open("url.txt","a",encoding="utf-8") as f:
-                        #     f.write(img_src+"\n")
-                        # print(url)
-                        self.download(user, url)
+                        # f.write(url+"\n")
+                        #  f.write(user+"|"+area+"|"+url + "\n")
+                        print(url)
+                        self.download(user, area, url)
 
-    def download(self, user, url):
+    def download(self, user, area, url):
         path = 'E:\\jike\\images\\' + user
+        if not os.path.exists(path):
+            os.mkdir(path)
+        path = path + "\\" + area
         if not os.path.exists(path):
             os.mkdir(path)
         sleep(random.random())
@@ -171,11 +189,17 @@ class JiKe:
                 image += ".png"
             with open(image, 'wb') as f:
                 f.write(resp.content)
+        else:
+            print("error")
+            refresh.Refresh().save_cookies()
 
 
 if __name__ == '__main__':
-    url = 'https://web.okjike.com/u/3674272C-0234-4B76-B304-ED3489B531C9'
+   
+    # url = "http://web.okjike.com/me" 
     jike = JiKe(url)
     page = jike.get_page(load_login_cookies=True, save_login_cookies=True, scroll=True)
     jike.geturl(page)
-    # jike.load_login_cookies()
+    # print("next")
+    # sleep(600)
+    # jike.load_lpogin_cookies()
