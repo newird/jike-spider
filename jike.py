@@ -14,13 +14,14 @@ from selenium.webdriver.chrome.service import Service
 
 
 class JiKe:
-    def __init__(self, url):
+    def __init__(self, url,save_path):
 
         self.options = selenium.webdriver.FirefoxOptions()
         # self.options.add_argument("--headless")
         self.browser = None
         self.url = url
         self.image_list = []
+        self.save_path = save_path
     def get_lastupdate(self,user):
         if os.path.exists("e://jike//images//"+user+"//time.txt"):
             with open("e://jike//images//"+user+"//time.txt","r") as f:
@@ -44,8 +45,9 @@ class JiKe:
         if load_login_cookies:
             self.load_login_cookies()
 
+
         if scroll:
-           
+
             # 滑动至底部
             client_hg = scroll_top = 0
             scroll_hg = 1
@@ -68,9 +70,10 @@ class JiKe:
                 js = 'let scroll_hg = document.body.scrollHeight; return scroll_hg;'
                 p_scroll_hg = scroll_hg
                 scroll_hg = self.browser.execute_script(js)
-            
-                if scroll_hg >= 200000:
+
+                if scroll_hg >= 2000:
                     break
+
         page = self.browser.page_source
         print("finished")
         return page
@@ -129,15 +132,25 @@ class JiKe:
         for index, content in enumerate(content_list):
             # user = content.xpath('.//div[@class="flex flex-row pt-0.5 pb-1"]/text()')[0]
             create_time = content.xpath('.//time/@datetime')[0]
+            file_path = save_path + user + "//time.txt"
+            if not os.path.exists(save_path + user):
+                os.makedirs(save_path + user)
+            if os.path.isfile(file_path):
+                with open(file_path, 'r') as f:
+                    last_time = f.readline().strip()
+                    if last_time == create_time:
+                        print("已经下载过了")
+                        return
+
             # print(create_time)
             if cnt == 0 :
-                with open("E://jike/images//"+user +"//time.txt","w") as f:
+                with open("E://jike/images//"+user +"//time.txt","w+") as f:
                     f.write(create_time)
                     cnt = 1
-            text = content.xpath(
-                './/div[contains(@class,"break-words content_truncate__1z0HR")]/text()')
-            href = content.xpath('.//a[@class="text-primary no-underline"]/@href')
-            like = content.xpath('.//span[@class="Like___StyledSpan-sc-8xi69i-1 gURQoB"]/text()')
+            # text = content.xpath(
+            #     './/div[contains(@class,"break-words content_truncate__1z0HR")]/text()')
+            # href = content.xpath('.//a[@class="text-primary no-underline"]/@href')
+            # like = content.xpath('.//span[@class="Like___StyledSpan-sc-8xi69i-1 gURQoB"]/text()')
 
             area = content.xpath(
                 './/a[@class="flex flex-row inline-flex items-center justify-center text-tag-3 font-semibold py-1.5 pl-2 pr-2.5 rounded-full bg-bg-on-body-2 text-bg-jike-blue hover:shadow-[0_0_2px] transition mt-[13px]"]/text()')
@@ -188,7 +201,7 @@ class JiKe:
                         self.download(user, area, url)
 
     def download(self, user, area, url):
-        path = 'E:\\jike\\images\\' + user
+        path = save_path + user
         if not os.path.exists(path):
             os.mkdir(path)
         if area == "978-7-020-06838-?":
@@ -216,8 +229,9 @@ if __name__ == '__main__':
    
     # url = "https://web.okjike.com/" 
     # url = "" #山之
-    url = "https://web.okjike.com/"
-    jike = JiKe(url)
+    url = "https://web.okjike.com/u/F2CF24F9-A022-4969-8691-FD1576BE8593"
+    save_path = "E://jike/images//"
+    jike = JiKe(url,save_path=save_path)
     page = jike.get_page(load_login_cookies=True, save_login_cookies=True, scroll=True)
     jike.geturl(page)
     # print("next")

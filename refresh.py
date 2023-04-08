@@ -9,7 +9,7 @@ class Refresh:
         self.url = 'https://web-api.okjike.com/api/graphql'
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.50',
-            'cookie': "sid=21ce87b9-9a42-4082-a558-19cd51a5ac3d; x-jike-access-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoibXVjWDJYUzM4VFZoXC9SaXR4SStGd3BcL0JJOFplbFwvUFdZeE5BN284Zk93dEtkWDBqMlNpZmFPbVhpZ2JTQUNzdG9QOGpzOWh4Mkt6VVR4SnVEK2hWb2pvWUpHaHpRV3FRaUpkYXlENkJBZUpqMFE2NjVJNjc4R2pyZ1IrN1BuQng0RjhuK1htYitSTzFMSnI1QmU5eVwvSG4xblFhbTlvSDdCVTJ6VjdaUDQ1MFIrUnF0SGd1bGo0N0N2MjVVREVPYUJcL1NzbnlYTGF4OHRiYXZiREFIWDdpV0pVUFJzdTFySk9raDd4QXpKcXo2Qlo5dUJUYXB5RzB2ZzQ1WkRlUlM2UGlnS0NCZ1ZVdUdibDBiMitBQk9xVDgwR1VuckpySTViUWNXbDJCS2pidUlpeGFqSVQ2OXhOcWxuTmg5d2R3WDA3em9jZWxTMkxic0tlN1ZTWDExU3lHUUtadkN3ajFuSWFRZ3dTb1wvUlN3PSIsInYiOjMsIml2IjoiS3dzWG1xTU1Jd0ZoWmNMWGlyQnJ0UT09IiwiaWF0IjoxNjY0NTQ0ODcwLjYzfQ.XyTXKOU0Lknosf8RYXqdS0MtL3chJeyY0bI0TkdMXYU; x-jike-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiS2VUUHZjOVAza1Zyc2dQNXVSemFvU2FkSzBSNzduOUlOR2dLMFRPcU5NRHNlZ2haS0FCR3M1K2orbHZBOHJCTVdHR1VoVzByWjJJdHJabnF4NHhQMkhZaDAwSkdueVBFKzRJVFRPRjNhOGJKYUxGZDFqMkhcL2pDNnRxNUE2YmFjdjhoXC9oR2xKZ0JPcjlKblVmZmd2S0xTOVMrcERnZTNhUzlXek03VERobFk9IiwidiI6MywiaXYiOiJtNlZ2eHRZM00rWmlUSFhhWVhNSEFRPT0iLCJpYXQiOjE2NjQ1NDQ4NzAuNjN9.qparbxqhP-Xh74FwWSYfq0DqWxUhQJlmY0H8Bi7Y3Ow; fetchRankedUpdate=1664544873476"
+            'cookie': "sid=8075cba4-97f9-4f09-8ff3-da6732150192; x-jike-access-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMG42K1diemlJUk54UDhuck5VTVlzQUxGR3JjTU0rUjVWN3Z3eHloVjZNamhOMzRtU2RZQzdwYk90MXkyaHpBWlh0NTNRQzY4SXFCcGFmaHlITjBJd0VzQ2xsTExwV1JRZ2tYc0xwMkk5K05tWWRWYmRjNjhCbXBqNGd5RHNcL2pEazRyZnhFb29GWFVvN2ZMS3Rhd0FUOGYzanRKeXhRdEl0dGgzeStONDRCNGJYR2c0T3h5UUtwZ1pzTG05VlFhbmg2WkxkTm4xZis4RCtVaHNFS1wvWXlhcDUrSnZ2ZFdXblQxSXprUWFVZkZVa3hwRXh4OUtyOEpqcURHN2cwc3hOeFlSaEhGK0dad2R0QzJUU29BUTZrRHVHbEk3QmpMN2R1M213SjJUbXBhbk1xNEFJcitRNUFiSk55VExGWTFGNEROdXNGc09URTJ5N0phbFRqWFhPeXBZeDJ1V054NWNGakd2bVZtYmxUMDA9IiwidiI6MywiaXYiOiJaT3p3UlNDczh2K1NVYWREeUdpWXp3PT0iLCJpYXQiOjE2ODA5NTQxNjYuNTI5fQ.DKSX5wVSTsyyZXzTwHAplgVvAJS0NIk-DuqTsn4vN2Q; x-jike-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoib2FvZFQ0YUJGV01sMHZ2cmM5SDN5QTBHMHRveHhnbFFYQWgwWGU4TnQ4SXdJYm1JRkkyM0UrSnlWMVBVaVZZcVkwRDhxQXNsVUVCbUJhQ1hzcE5lV0VVc2Y1SDZkUkdRUGxkQUdFa1Uyb3JiUkxRcXhIVnBlTW1UeUxFZEJXeE0xZDNUXC9UMXhqVmZzaWVGSVlCaXRvN1UybTF2QmpzaVlBa2t1NFFYTE95bz0iLCJ2IjozLCJpdiI6Ims5eUdrWGJvQjlJYXNxMHNPMm9VZ3c9PSIsImlhdCI6MTY4MDk1NDE2Ni41Mjl9.CI5hTWlKfWKJ16_VzR5fAqLv8ZIbX39c-KL72sxHn_s; fetchRankedUpdate=1680954166773"
         }
         self.payload = {'operationName': "refreshToken",
                         'query': "mutation refreshToken {\n  refreshToken {\n    accessToken\n    refreshToken\n  "
@@ -28,6 +28,7 @@ class Refresh:
         cookies = requests.utils.dict_from_cookiejar(r.cookies)
         with open("cookies.txt", "w") as fp:
             json.dump(cookies, fp)
+        print("refresh successfully")
     def get_cookies(self):
         r = requests.post(self.url, headers=self.headers, data=self.payload)
         cookies = requests.utils.dict_from_cookiejar(r.cookies)
