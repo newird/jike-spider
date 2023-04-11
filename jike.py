@@ -10,6 +10,7 @@ import requests
 from time import sleep
 import refresh
 from selenium.webdriver.chrome.service import Service
+import logging
 
 
 class JiKe:
@@ -22,7 +23,14 @@ class JiKe:
         self.image_list = []
         self.save_path = save_path
         self.user = ""
+        logname = 
+        today = datetime.today().strftime('%Y-%m-%d')
 
+        # 配置日志
+        logging.basicConfig(filename=f'log/{today}.txt', level=logging.DEBUG)
+
+        # 将print语句重定向到日志中
+        print = logging.debug
 
     def get_page(self, save_login_cookies=False, load_login_cookies=False, scroll=False):
         """
@@ -30,8 +38,7 @@ class JiKe:
         load_login_cookies: 加载登录cookies
         scroll:控制页面滚动
         """
-        s = Service(executable_path=r'C:\Program Files\Google\Chrome\Application\chromedriver.exe')
-        self.browser = webdriver.Firefox(executable_path=r'C:\Program Files\Firefox Developer Edition\geckodriver.exe',options=self.options)
+        self.browser = webdriver.Firefox(options=self.options)
         self.browser.get(self.url)
         if save_login_cookies:
             self.save_login_cookies()
@@ -194,7 +201,7 @@ class JiKe:
             os.mkdir(path)
         if area == "978-7-020-06838-?":
             area = "978"
-        path = path + "\\" + area
+        path = path + "/" + area
         if not os.path.exists(path):
             os.mkdir(path)
         sleep(random.uniform(1, 2))
@@ -219,7 +226,7 @@ class JiKe:
 if __name__ == '__main__':
    
 
-    save_path = "N://setu//jike/images//"
+    save_path = "/home/newird/nas/nas/setu/jike/images/"
     with open("userlist.txt",'r') as f:
         for line in f.readlines():
             url = line.strip()
