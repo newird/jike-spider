@@ -2,6 +2,7 @@ import json
 
 import requests
 from requests.cookies import RequestsCookieJar
+import os
 
 
 class Refresh:
@@ -17,7 +18,9 @@ class Refresh:
                         'variables': {}}
 
     def save_cookies(self):
-        with open("cookies.txt", "r", encoding="utf-8") as f:
+        current_path = os.path.abspath(os.path.dirname(__file__) ) 
+        cookie  = current_path + "/cookies.txt" ;
+        with open(cookie, "r", encoding="utf-8") as f:
             cookies = json.load(f)
         # str_cookies = "fetchRankedUpdate="
         str_cookies = ""
@@ -26,16 +29,20 @@ class Refresh:
         self.headers['cookie'] = str_cookies
         r = requests.post(self.url, headers=self.headers, data=self.payload)
         cookies = requests.utils.dict_from_cookiejar(r.cookies)
-        with open("cookies.txt", "w") as fp:
+        with open(cookie, "w") as fp:
             json.dump(cookies, fp)
         print("refresh successfully")
     def get_cookies(self):
         r = requests.post(self.url, headers=self.headers, data=self.payload)
         cookies = requests.utils.dict_from_cookiejar(r.cookies)
-        with open("cookies.txt", "w") as fp:
+        current_path = os.path.abspath(os.path.dirname(__file__) ) 
+        cookietxt  = current_path + "/cookies.txt" ;
+        with open(cookiestxt, "w") as fp:
             json.dump(cookies, fp)
     def load_cookies(self):
-        with open("cookies.txt", "r") as fp:
+        current_path = os.path.abspath(os.path.dirname(__file__) ) 
+        cookietxt  = current_path + "/cookies.txt" ;
+        with open(cookiestxt, "r") as fp:
             cookies = json.load(fp)
             self.headers['cookie'] = cookies
     def test(self):

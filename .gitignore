@@ -6,7 +6,7 @@ a.html
 download.py
 page.txt
 url.txt
-
+/log
 # C extensions
 *.so
 

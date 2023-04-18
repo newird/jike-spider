@@ -1,5 +1,5 @@
 from datetime import datetime
-import selenium.webdriver.chrome.options
+from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from lxml import etree
 import json
@@ -10,74 +10,61 @@ import requests
 from time import sleep
 import refresh
 from selenium.webdriver.chrome.service import Service
-import logging
-
-
 class JiKe:
     def __init__(self, url,save_path):
 
-        self.options = selenium.webdriver.FirefoxOptions()
+        self.options = Options()
         self.options.add_argument("--headless")
         self.browser = None
         self.url = url
         self.image_list = []
         self.save_path = save_path
         self.user = ""
-        logname = 
+        # 获取当前工作目录的绝对路径
+        self.current_dir = os.path.abspath(os.path.dirname(__file__))    
+
+    def log(self,message) :
         today = datetime.today().strftime('%Y-%m-%d')
-
-        # 配置日志
-        logging.basicConfig(filename=f'log/{today}.txt', level=logging.DEBUG)
-
-        # 将print语句重定向到日志中
-        print = logging.debug
-
-    def get_page(self, save_login_cookies=False, load_login_cookies=False, scroll=False):
+        logfile = '/log/' + today + '.txt'
+        logtxt = self.current_dir  + logfile 
+        with open(logtxt , 'a+' , ) as f:
+            print(message , file =  f) 
+        print(message )
+    def get_page(self,to_end = False):
         """
         save_login_cookies: 保存登录cookies
         load_login_cookies: 加载登录cookies
         scroll:控制页面滚动
         """
-        self.browser = webdriver.Firefox(options=self.options)
+        self.browser = webdriver.Chrome(options=self.options)
         self.browser.get(self.url)
-        if save_login_cookies:
-            self.save_login_cookies()
-        if load_login_cookies:
-            self.load_login_cookies()
+        self.save_login_cookies()
+        self.load_login_cookies()
 
         page = self.browser.page_source
 
-        tail_len = 15000
+        tail_len = 30000
         prev_len = len(page)
-        self.geturl(page)
+#        self.geturl(page)
 
-        if scroll:
-            # refresh
-            cnt = 0
-            while True:
-                cnt += 1
-                if cnt % 20 == 0:
-                    self.load_login_cookies()
-                    self.save_login_cookies()
-
-                self.browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
-                # 根据网络状态适当修改滑动加载时间
-                time.sleep(12)
-                page = self.browser.page_source
-                cul_len = len(page)
-                new_page = page[prev_len-tail_len:cul_len]
-                self.geturl(new_page)
-                # if cul_len == prev_len:
-                #     return
-                prev_len = cul_len
-                if not self.geturl(new_page):
-                    print("had downloaded!")
-                    return
-
-
-
-
+        # refresh
+        cnt = 0
+        while True:
+            time.sleep(6)
+            self.browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+            # 根据网络状态适当修改滑动加载时间
+            print("refresh new page")
+            time.sleep(12)
         
+            page = self.browser.page_source
+            cul_len = len(page)
+            print(cul_len)
+            new_page = page[prev_len-tail_len:cul_len]
+            prev_len = cul_len
+            if not self.geturl(new_page):
+                self.log("had downloaded!")
+                self.browser.quit()
+                return
 
     def save_login_cookies(self):
         """
@@ -87,7 +74,7 @@ class JiKe:
         ref.save_cookies()
 
         cookies = self.browser.get_cookies()
-        with open('./cookies.json', 'w') as f:
+        with open(self.current_dir + '/cookies.json', 'w') as f:
             # f.write(json.dumps(cookies))
             json.dump(cookies, f)
         return True
@@ -97,7 +84,7 @@ class JiKe:
         读取本地cookies文件加载cookies模拟登录
         """
 
-        with open("cookies.json", "r") as fp:
+        with open(self.current_dir + "/cookies.json", "r") as fp:
             file = json.loads(fp.read())
 
             for cookie in file:
@@ -107,7 +94,7 @@ class JiKe:
                     'value': cookie['value'],
                     'path': cookie['path']
                 })
-        with open('cookies.txt', 'r') as f:
+        with open(self.current_dir + '/cookies.txt', 'r') as f:
             file = json.load(f)
             for cookie in file:
                 self.browser.add_cookie({
@@ -122,7 +109,6 @@ class JiKe:
 
     def geturl(self, page):
 
-        print("new page")
         page = "<html> <head> <meta charset='utf-8'> </head> <body>" + page
         # print(page)
         page_etree = etree.HTML(page)
@@ -130,8 +116,9 @@ class JiKe:
         if not self.user:
             user = page_etree.xpath('//h2[@class="sc-bdvvtL jpfEiy"]/text()')[0]
             self.user = user
+            print(self.user)
         content_list = page_etree.xpath('//div[@class="flex flex-col border-b border-tint-border"]')
-
+        download_state = False
         for index, content in enumerate(content_list):
             # if not user:
             #     user = content.xpath('.//div[@class="flex flex-row pt-0.5 pb-1"]/text()')
@@ -160,8 +147,8 @@ class JiKe:
                 img_src = content.xpath(img_pattern + '//img/@src')
                 if img_src:
                     url = img_src[0].split('?')[0]
-                    print(url)
-                    self.download(area, url=url)
+                    self.log(url)
+                    download_state |= self.download(area, url=url)
 
 
                 else:
@@ -184,17 +171,13 @@ class JiKe:
                         img_src = image.lstrip('url("').rstrip('")')
                         url = img_src.split('?')[0]
 
-                        print(url)
+                        self.log(url)
                         if is_pin :
-                            print(is_pin[0])
+                            self.log(is_pin[0])
                         else :
-                            download_state = self.download(area, url)
-                            if download_state :
-                                print("Ok")
-                            else:
-                                print("downloadedededed")
-                            return  download_state
-
+                            download_state |= self.download(area, url)
+            
+        return  download_state
     def download(self,  area, url):
         path = save_path + self.user
         if not os.path.exists(path):
@@ -213,22 +196,21 @@ class JiKe:
             if "jpg" not in image and "jpeg" not in image and "png" not in image and "gif" not in image:
                 image += ".png"
             if os.path.exists(image) :
-                print("is exist")
+                self.log("is exist")
                 return False
             with open(image, 'wb') as f:
                 f.write(resp.content)
-            return True
-        else:
-            print("error")
-            refresh.Refresh().save_cookies()
-
+                return True
+        return True 
 
 if __name__ == '__main__':
    
-
-    save_path = "/home/newird/nas/nas/setu/jike/images/"
-    with open("userlist.txt",'r') as f:
+    save_path = "/home/newird/nas/nas/setu/jike/"
+    current_path = os.path.abspath(os.path.dirname(__file__))    
+    with open(current_path + "/userlist.txt",'r') as f:
         for line in f.readlines():
             url = line.strip()
+            if url.startswith('#'):
+                continue
             jike = JiKe(url,save_path)
-            jike.get_page(load_login_cookies=True, save_login_cookies=True, scroll=True)
+            jike.get_page()
