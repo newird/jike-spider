@@ -1,0 +1,15 @@
+[project]
+name = "jike-spider"
+version = "0.1.0"
+description = "Add a short description here"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tasks]
+start = "python jike.py"
+ref = "python refresh.py"
+[dependencies]
+lxml = ">=5.1.0,<5.2"
+requests = ">=2.31.0,<2.32"
+python = ">=3.12.1,<3.13"
+selenium = ">=4.16.0,<4.17"

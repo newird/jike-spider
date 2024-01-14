@@ -16,7 +16,7 @@ class JiKe:
     def __init__(self, url,save_path):
 
         self.options = selenium.webdriver.FirefoxOptions()
-        self.options.add_argument("--headless")
+        # self.options.add_argument("--headless")
         self.browser = None
         self.url = url
         self.image_list = []
@@ -30,8 +30,8 @@ class JiKe:
         load_login_cookies: 加载登录cookies
         scroll:控制页面滚动
         """
-        s = Service(executable_path=r'C:\Program Files\Google\Chrome\Application\chromedriver.exe')
-        self.browser = webdriver.Firefox(executable_path=r'C:\Program Files\Firefox Developer Edition\geckodriver.exe',options=self.options)
+        # s = Service(executable_path=r'C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+        self.browser = webdriver.Firefox(options=self.options)
         self.browser.get(self.url)
         if save_login_cookies:
             self.save_login_cookies()
@@ -58,12 +58,10 @@ class JiKe:
                 time.sleep(12)
                 page = self.browser.page_source
                 cul_len = len(page)
+                print(cul_len)
                 new_page = page[prev_len-tail_len:cul_len]
-                self.geturl(new_page)
-                # if cul_len == prev_len:
-                #     return
                 prev_len = cul_len
-                if not self.geturl(new_page):
+                if self.geturl(new_page):
                     print("had downloaded!")
                     return
 
@@ -173,20 +171,17 @@ class JiKe:
                     """ % (index,)
                     images = self.browser.execute_script(js)
 
+
+                    all_downloaded = True
                     for image in images:
                         img_src = image.lstrip('url("').rstrip('")')
                         url = img_src.split('?')[0]
-
                         print(url)
                         if is_pin :
                             print(is_pin[0])
                         else :
-                            download_state = self.download(area, url)
-                            if download_state :
-                                print("Ok")
-                            else:
-                                print("downloadedededed")
-                            return  download_state
+                            all_downloaded &= self.download(area, url)  
+                    return all_downloaded
 
     def download(self,  area, url):
         path = save_path + self.user
@@ -207,10 +202,10 @@ class JiKe:
                 image += ".png"
             if os.path.exists(image) :
                 print("is exist")
-                return False
+                return True
             with open(image, 'wb') as f:
                 f.write(resp.content)
-            return True
+            return False
         else:
             print("error")
             refresh.Refresh().save_cookies()
@@ -219,7 +214,7 @@ class JiKe:
 if __name__ == '__main__':
    
 
-    save_path = "N://setu//jike/images//"
+    save_path = "N:\\nas\\setu\\jike\\"
     with open("userlist.txt",'r') as f:
         for line in f.readlines():
             url = line.strip()
