@@ -185,6 +185,27 @@ package:
   purls:
   - pkg:pypi/exceptiongroup
 - platform: win-64
+  name: firefox
+  version: '121.0'
+  category: main
+  manager: conda
+  dependencies:
+  - ucrt >=10.0.20348.0
+  - vc >=14.2,<15
+  - vc14_runtime >=14.29.30139
+  url: https://conda.anaconda.org/conda-forge/win-64/firefox-121.0-h63175ca_0.conda
+  hash:
+    md5: 2e8781476712f672eca83b5c9141e5cb
+    sha256: 3ec09de00700750e10a00715920ae153beaa62e717362d490a2b46732dd24924
+  build: h63175ca_0
+  arch: x86_64
+  subdir: win-64
+  build_number: 0
+  license: MPL-2.0
+  license_family: MOZILLA
+  size: 69575172
+  timestamp: 1702996232505
+- platform: win-64
   name: h11
   version: 0.14.0
   category: main
