@@ -8,6 +8,7 @@ platforms = ["win-64"]
 [tasks]
 start = "python jike.py"
 ref = "python refresh.py"
+desame = 'python .\depulicate.py'
 [dependencies]
 lxml = ">=5.1.0,<5.2"
 requests = ">=2.31.0,<2.32"
